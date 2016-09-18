@@ -1,0 +1,95 @@
+<% include header.html %>
+<div class="main" id="main">
+	<div class="banner" id="banner">
+		<div class="slider">
+		    <ul>
+		    	<template v-for='i in bannerList'>
+		    		<li><a :href="i.link" target="_blank"><img :src="i.uploadImg"></a></li>
+		    	</template>
+		    </ul>
+		    <div class="slider_nav"></div>
+		    <a href="javascript:;" class="prev"> &lt;</a>
+		    <a href="javascript:;" class="next"> &gt; </a>
+		</div>
+	</div>
+
+	<div class="newList" id="newList" v-cloak>
+		<h2>新闻列表</h2>
+		<ul>
+			<li v-for='i in newList'>
+				<a :href='i.link+i._id' target="_blank">
+					<img :src="i.uploadImg" alt="">
+					<div>
+						<b>{{i.title}}</b>
+						<p>{{i.desc}}</p>
+						<span>[ {{i.time}} ]</span>
+					</div>
+				</a>
+			</li>
+		</ul>
+		<div class="page">
+			<a href="javascipt:;" class="prev">上一页</a>
+			<span>
+				<template v-for='i in pageCount'>
+					<a href="?page={{i+1}}">{{i+1}}</a>
+				</template>
+			</span>
+			<a href="javascipt:;" class="next">下一页</a>
+		</div>
+	</div>
+</div>
+
+<% include footer.html %>
+
+<script>
+
+	var vm = new Vue({
+		el:'#main',
+		data:{
+			newList:[],
+			bannerList:[]
+		},
+		ready:function(){
+
+			$.ajax({
+				url: '/api/home/bannerList',
+				type: 'get',
+				dataType: 'json'
+			})
+			.done(function(data){
+				if(data.json=='0000'){
+					vm.bannerList = data.data;
+					vm.banner();
+				}
+			})
+
+			$.ajax({
+				url: '/api/home/homeNewList',
+				type: 'get',
+				dataType: 'json'
+			})
+			.done(function(data) {
+				if(data.json=='0000'){
+					vm.newList = data.data;
+
+				}
+			});
+		},
+		methods:{
+			banner:function(){
+				this.$nextTick(function(){
+					$(".slider").slider({
+				        "initWidth":1200, //初始宽度;
+				        "initHeight":400, //初始高度;
+				        "autoPlay":true, //是否自动播放;
+				        "loop":true, //是否循环；
+				        "intervalTime":4000,//切换的时间间隔; 
+				        "speed":600,//切换速度;
+				        "showSidebar":true //显示底部导航；
+				    });
+				})
+			}
+		}
+	})
+
+</script>

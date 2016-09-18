@@ -1,0 +1,130 @@
+<% include header.html %>
+<div class="main" id="main">
+	<h3>新闻列表</h3>
+	<div class="inner_newList" id="newList" v-cloak>
+
+		<template v-for='i in newList'>
+			<p>
+				<a :href="i.link+i._id">{{i.title}}</a>
+				<span>{{i.time}}</span>
+			</p>
+		</template>
+		
+
+		<div class="page">
+			<a href="javascipt:;" class="prev">上一页</a>
+			<span>
+				<template v-for='i in pageCount'>
+					<a href="?page={{i+1}}">{{i+1}}</a>
+				</template>
+			</span>
+			<a href="javascipt:;" class="next">下一页</a>
+		</div>
+	</div>
+	
+</div>
+
+
+<script>
+
+	var pageSize = 10;
+	var skip = getUrlParam("page")?(getUrlParam("page")-1)*pageSize:0;
+	var count;
+
+	var vm = new Vue({
+		el:'#main',
+		data:{
+			newList:[],
+			pageCount:0,
+			bannerList:[]
+		},
+		ready:function(){
+
+			$.ajax({
+				url: '/api/home/bannerList',
+				type: 'get',
+				dataType: 'json'
+			})
+			.done(function(data){
+				if(data.json=='0000'){
+					vm.bannerList = data.data;
+					vm.banner();
+				}
+			})
+
+			$.ajax({
+				url: '/api/news/NewsList',
+				type: 'post',
+				dataType: 'json',
+				data:{
+					'pageSize':pageSize,
+					'skip':skip
+				}
+			})
+			.done(function(data) {
+				if(data.json=='0000'){
+
+					vm.newList = data.data.newList;
+					count = data.data.count;
+
+					if(count>pageSize){
+						$(".page").show();
+						vm.pageCount = Math.ceil(count/pageSize);
+					}
+					else{
+						$(".page").hide();
+					}
+
+					vm.page();
+				}
+			});
+		},
+		methods:{
+			banner:function(){
+				this.$nextTick(function(){
+					$(".slider").slider({
+				        "initWidth":1200, //初始宽度;
+				        "initHeight":400, //初始高度;
+				        "autoPlay":true, //是否自动播放;
+				        "loop":true, //是否循环；
+				        "intervalTime":4000,//切换的时间间隔; 
+				        "speed":600,//切换速度;
+				        "showSidebar":true //显示底部导航；
+				    });
+				})
+			},
+			page:function(){
+				this.$nextTick(function(){
+
+					var curIndex = getUrlParam('page')||1;
+
+					$(".page span a").eq(curIndex-1).addClass('active');
+
+					if(curIndex==1){
+						$(".page .prev").attr('href','?page=1')
+					}
+					else{
+						$(".page .prev").attr('href','?page='+(curIndex-1))
+					};
+
+					if(curIndex==Math.ceil(count/pageSize)){
+						$(".page .next").attr('href','?page='+Math.ceil(count/pageSize))
+					}
+					else{
+						$(".page .next").attr('href','?page='+(curIndex*1+1))
+					}
+					
+				})
+			}
+		}
+	})
+
+function getUrlParam(name){
+    var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+    var r = window.location.search.substring(1).match(reg); //匹配目标参数
+    if (r != null) return unescape(r[2]);
+    return ''; //返回参数值
+}
+
+</script>
+<% include footer.html %>

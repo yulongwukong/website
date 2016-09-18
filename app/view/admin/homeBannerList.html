@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title><%=title%></title>
+	<% include meta.html %>
+</head>
+<body>
+<div class="admin">
+	<% include head.html %>
+	<div class="adminMian">
+		<% include left.html %>
+		<div class="adminRight homeNewList" id="newList" v-cloak>
+			<h1><%=sideTitle%></h1>
+			<form>
+				<table>
+					<thead>
+						<tr>
+							<td width="80">序号</td>
+							<td>缩略图</td>
+							<td>链接</td>
+							<td>时间</td>
+							<td>操作</td>
+						</tr>
+						
+					</thead>
+					<tbody v-for='i in bannerList'>
+						<tr>
+							<td>{{i.sortIndex}}</td>
+							<td><img :src="i.uploadImg"></td>
+							<td>{{i.link}}</td>
+							<td>{{i.orderTime}}</td>
+							<td>
+								<a href="/admin/homeBannerUpdate/{{i._id}}" uid-id={{i._id}}>更新</a>
+								<a href="javascript:;" uid-id={{i._id}}>删除</a>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</form>
+
+		</div>
+	</div>
+</div>
+
+
+<% include footer.html %>
+
+
+<script>
+
+var vm = new Vue({
+	el:'#newList',
+	data:{
+		bannerList:[],
+	},
+	ready:function(){
+		$.ajax({
+			url: '/api/home/bannerList',
+			type: 'get',
+			dataType: 'json'
+		})
+		.done(function(data) {
+
+			if(data.json=='0000'){
+				vm.bannerList = data.data;
+			}
+
+			vm.alertBox();
+		})
+	},
+	methods:{
+		alertBox:function(){
+			this.$nextTick(function(){
+				$(".homeNewList").delegate('a', 'click', function(event) {
+
+					var _this = $(this);
+
+					if($(this).html()=='删除'){
+
+						$(".alertBox").fadeIn(200);
+
+						$(".box span a").eq(1).unbind('click').bind('click',function(){
+							$.ajax({
+								url: '/api/admin/deleteBanner',
+								type: 'post',
+								dataType: 'json',
+								data: {
+									'objectId': _this.attr('uid-id')
+								}
+							})
+							.done(function(data) {
+								if(data.json=='0000'){
+									$(".alertBox").fadeOut(200);
+									 _this.parents('tr').remove();
+									 $.ajax({
+										url: '/api/home/bannerList',
+										type: 'get',
+										dataType: 'json'
+									})
+									.done(function(data) {
+										if(data.json=='0000'){
+											vm.newList = data.result;
+										}
+									})
+								}
+							})
+						})
+
+					}
+				});
+			})
+		}
+
+	}
+});
+
+function getUrlParam(name){
+    var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+    var r = window.location.search.substring(1).match(reg); //匹配目标参数
+    if (r != null) return unescape(r[2]);
+    return ''; //返回参数值
+}
+
+</script>

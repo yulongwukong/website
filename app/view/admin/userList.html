@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title><%=title%></title>
+	<% include meta.html %>
+</head>
+<body>
+<div class="admin">
+	<% include head.html %>
+	<div class="adminMian">
+		<% include left.html %>
+		<div class="adminRight homeNewList" id="newList" v-cloak>
+			<h1><%=sideTitle%></h1>
+			<form>
+				<table>
+					<thead>
+						<tr>
+							<td width="80">序号</td>
+							<td>用户名</td>
+							<td>头像</td>
+							<td>注册方式</td>
+							<td>注册账号</td>
+							<td>注册时间</td>
+							<td>操作</td>
+						</tr>
+						
+					</thead>
+					<tbody v-for='i in newList'>
+						<tr>
+							<td>{{$index+1}}</td>
+							<td>{{i.nickname}}</td>
+							<td><img :src="i.pic" style='width:50px'></td>
+							<td>{{i.type}}</td>
+							<td v-if="(i.type=='phone')">{{i.userPhone}}</td>
+							<td v-if="(i.type=='mail')">{{i.userMail}}</td>
+							<td>{{i.time}}</td>
+							<td>
+								<a href="javascript:;" uid-id={{i._id}}>删除</a>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</form>
+
+			<div class="page">
+			<a href="javascipt:;" class="prev">上一页</a>
+			<span>
+				<!-- <a href="javascipt:;" class="active">1</a>
+				<a href="javascipt:;">2</a> -->
+				<template v-for='i in pageCount'>
+					<a href="?page={{i+1}}">{{i+1}}</a>
+				</template>
+			</span>
+			<a href="javascipt:;" class="next">下一页</a>
+		</div>
+
+		</div>
+	</div>
+</div>
+
+<!--alertBox-->
+<div class="alertBox">
+	<div class="box">
+		<p>是否要删除这个用户？</p>
+		<span>
+			<a href="javascript:;" class="left">取消</a>
+			<a href="javascript:;" class="right">确定</a>
+		</span>
+	</div>
+</div>
+<!--alertBox-->
+
+
+<% include footer.html %>
+
+
+<script src='/js/userList.js'></script>

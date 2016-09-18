@@ -1,0 +1,257 @@
+<% include header.html %>
+<div class="main" id="main">
+	<div class="topTag">
+		<a href="/">首页</a><em>></em><a href="/news">新闻列表</a><em>></em><span><%- news_detail.title %></span>
+	</div>
+	<div class="inner_newDetail">
+		<div class="inner_left">
+			<div class="inner_newDetail_head">
+				<h5><%- news_detail.title %></h5>
+				<span>
+					发布时间：<%- news_detail.orderTime %>
+					<em>已经有<a href="#comment"><i id="commentCount"><%- news_detail.commentCount %></i>条留言</a></em>
+				</span>
+
+			</div>
+			<div class="inner_newDetail_main">
+				<%- news_detail.content %>
+			</div>
+			<!-- 热门评论 -->
+			<div class="comment">
+				<div class="comment_head">
+					<%if(!userName){%>
+						<p>请使用论坛账号登录，<a href="/login?url=news_detail/<%=news_detail._id%>">登录</a>后才能发表评论和回复</p>
+					<%}else{%>
+						<p>您好，<em><%=userName%></em>您可以发表评论<a href="/loginout?url=news_detail/<%=news_detail._id%>">退出</a></p>
+					<%}%>
+
+					<h3>热门评论</h3>
+				</div>
+				<div class="comment_content" id="comment">
+
+					<div class="comment_box">
+						<!-- <form> -->
+							<table>
+								<tr>
+									<td width="100">
+										<div class="headPic">
+											<img :src="userPic" alt="">
+										</div>
+									</td>
+									<td>
+										<input type="hidden" id='newsId' name="id" value="<%=news_detail._id%>">
+										<%if(userName){%>
+										<input type="hidden" id='userName' name="userName" value="<%=userName%>">
+										<%}%>
+
+										<%if(userId){%>
+										<input type="hidden" id='userId' name="userId" value="<%=userId%>">
+										<%}%>
+
+										<p>发表评论：</p>
+										<textarea name="comment" id='commentText' <%if(!userName){%>disabled=true<%}%> ></textarea>
+										<button id="commentBtn" <%if(!userName){%>disabled=true<%}%> >评论</button>
+									</td>
+								</tr>
+							</table>
+						<!-- </form> -->
+					</div>
+
+					<ul>
+						<template v-for='i in comment'>
+							<li>
+								<div class="headPic">
+									<a href="/center"><img v-bind:src="i.userPic" alt=""></a>
+								</div>
+								<div class="comment_text">
+									<div class="comment_person">
+										<span>{{i.userPhone}}</span>
+										<span>发表于{{i.time}}</span>
+										<a href="javascript:;" uid='{{i._id}}' class="zan">顶(<i>{{i.zan}}</i>)</a>
+										<a href="javascript:;" uid='{{i._id}}' class="cai">踩(<i>{{i.cai}}</i>)</a>
+									</div>
+									<p>{{i.content}}</p>
+								</div>
+							</li>
+						</template>
+					</ul>
+					
+				</div>
+			</div>
+			<!-- 热门评论 -->
+		</div>
+
+		<div class="inner_right"></div>
+
+	</div>
+</div>
+
+<script>
+
+	var timer = null;
+	var storeDelay = 24*60*60*1000;
+	var vm = new Vue({
+		el:"#comment",
+		data:{
+			comment:[],
+			userPic:"",
+		},
+		ready:function(){
+
+			$.ajax({
+				url: '/api/getUser',
+				type: 'get',
+				dataType: 'json'
+			})
+			.done(function(data) {
+				if(data.json=='0000'){
+					vm.userPic = data.data;
+				}
+				else{
+					vm.userPic = data.pic;
+				}
+			});
+
+			$.ajax({
+				url: '/api/commentList',
+				type: 'post',
+				dataType: 'json',
+				data:{
+					'newsId':$("#newsId").val()
+				}
+			})
+			.done(function(data) {
+				if(data.json=='0000'){
+					vm.comment = data.data;
+				}
+				vm.zan();
+				vm.cai();
+			});
+
+			$("#commentBtn").click(function(event) {
+
+				if( !$("#commentText").val().trim() ){
+					alert('不要吝啬，写点东西吧！')
+					return;
+				}
+
+				$.ajax({
+					url: '/api/comment',
+					type: 'POST',
+					dataType: 'json',
+					data: {
+						'newsId':$("#newsId").val(),
+						'commentText':$("#commentText").val(),
+						'userId':$("#userId").val(),
+						'userPhone':$("#userPhone").val()
+					},
+				})
+				.done(function(data){
+					if(data.json=='0000'){
+						$.ajax({
+							url: '/api/commentList',
+							type: 'post',
+							dataType: 'json',
+							data:{
+								'newsId':$("#newsId").val()
+							}
+						})
+						.done(function(data) {
+							if(data.json=='0000'){
+								vm.comment = data.data;
+								vm.zan();
+								vm.cai();
+							}
+						});
+
+						$("#commentText").val('');
+						vm.commentCount();
+
+					}
+				})
+				
+			});
+		},
+		methods:{
+			zan:function(){
+				this.$nextTick(function(){
+
+					$(".zan").click(function(){
+						var _this = $(this);
+						var id = $(this).attr("uid");
+						var zanCount = $(this).find('i').html()*1;
+
+						if( localStorage.getItem('zan'+id) ){
+							alert('不能重复点赞！')
+						}
+						else{
+							$.ajax({
+								url: '/api/zan',
+								type: 'post',
+								dataType: 'json',
+								data:{
+									'commentId':id
+								}
+							})
+							.done(function(data) {
+								if(data.json=='0000'){
+									_this.find('i').html(++zanCount);
+
+									localStorage.setItem('zan'+_this.attr("uid"),_this.attr("uid"));
+									clearTimeout(timer);
+									timer = setTimeout(function(){
+										localStorage.clear();	
+									}, storeDelay);
+								}
+							})
+						}
+
+						
+					})
+				})
+			},
+			cai:function(){
+				this.$nextTick(function(){
+					$(".cai").click(function(){
+						var _this = $(this);
+						var id = $(this).attr("uid");
+						var zanCount = $(this).find('i').html()*1;
+
+						if( localStorage.getItem('cai'+id) ){
+							alert('不能重复点踩！')
+						}else{
+							$.ajax({
+								url: '/api/cai',
+								type: 'post',
+								dataType: 'json',
+								data:{
+									'commentId':id
+								}
+							})
+							.done(function(data) {
+								if(data.json=='0000'){
+									_this.find('i').html(++zanCount);
+									localStorage.setItem('cai'+_this.attr("uid"),_this.attr("uid"));
+									clearTimeout(timer);
+									timer = setTimeout(function(){
+										localStorage.clear();	
+									}, storeDelay);
+								}
+							})
+						}
+						
+					})
+				})
+			},
+			commentCount:function(){
+				this.$nextTick(function(){
+					var commentCount = $("#commentCount").html()*1;
+					$("#commentCount").html(++commentCount)
+				})
+			}
+		}
+	});
+
+</script>
+
+<% include footer.html %>

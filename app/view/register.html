@@ -1,0 +1,77 @@
+<% include header.html %>
+
+<div class="main">
+	<h3>注册</h3>
+	<div class="register_header">
+		<a href="javascript:;" class="current" type='phone'>手机注册</a>
+		<a href="javascript:;" type="mail">邮箱注册</a>
+	</div>
+	<div class="form">
+		
+		<form id='registerForm' method='post'>
+			<div class="phone item">
+				<p>
+					<input type="text" id='userPhone' name='userPhone' placeholder="请写你的手机号">
+					<em></em>
+				</p>
+				<p>
+					<input type="text" id='code' name='code' class="code" placeholder='请输入右侧验证码'>
+					<em></em>
+					<b>	
+						<img class="codeImg" alt="">
+						<a href="javascript:;" class="refresh"></a>
+					</b>
+				</p>
+				<p>
+					<input type="text" id='phoneCode' name='phoneCode' class="code" placeholder='请输入手机验证码'>
+					<em></em>
+					<button type="button" class="phoneMsg">发送短信验证码</button>
+				</p>
+			</div>
+			<div class="mail item" style="display:none">
+				<p>
+					<input type="text" id='userMail' name='userMail' placeholder="请写你的邮箱">
+					<em></em>
+				</p>
+				<p>
+					<input type="text" id='picCode' name='picCode' class="code" placeholder='请输入右侧验证码'>
+					<em></em>
+					<b>	
+						<img class="codeImg" alt="">
+						<a href="javascript:;" class="refresh"></a>
+					</b>
+				</p>
+				<p>
+					<input type="text" id='mailCode' name='mailCode' class="code" placeholder='请输入邮箱验证码'>
+					<em></em>
+					<button type="button" class="phoneMsg">发送邮箱验证码</button>
+				</p>
+			</div>
+			<p>
+				<input id='passWord' name='passWord' type="password" placeholder='设置密码'>
+				<em></em>
+			</p>
+			<p>
+				<input id='passWord2' name='passWord2' type="password" placeholder='重复密码'>
+				<em></em>
+			</p>
+			<p>
+				<a href="javascript:;" class="submit">注册</a>
+			</p>
+
+			<div class="login_footer">
+				<a href="">QQ登录</a>
+				<span></span>
+				<a href="/login">已有帐号，立即登录</a>
+			</div>
+		</form>
+		
+	</div>
+</div>
+
+<script src='js/libs/validate.min.js'></script>
+<script src='js/libs/message.js'></script>
+<script src='js/libs/metadata.js'></script>
+<script src='js/register.js'></script>
+
+<% include footer.html %>

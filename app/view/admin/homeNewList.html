@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title><%=title%></title>
+	<% include meta.html %>
+</head>
+<body>
+<div class="admin">
+	<% include head.html %>
+	<div class="adminMian">
+		<% include left.html %>
+		<div class="adminRight homeNewList" id="newList" v-cloak>
+			<h1><%=sideTitle%></h1>
+			<form>
+				<table>
+					<thead>
+						<tr>
+							<td width="80">序号</td>
+							<td>标题</td>
+							<td>缩略图</td>
+							<td>链接</td>
+							<td>描述</td>
+							<td>时间</td>
+							<td>评论数</td>
+							<td>操作</td>
+						</tr>
+						
+					</thead>
+					<tbody v-for='i in newList'>
+						<tr>
+							<td>{{$index+1}}</td>
+							<td>{{i.title}}</td>
+							<td><img :src="i.uploadImg"></td>
+							<td>{{i.link}}</td>
+							<td width='130'>{{i.desc}}</td>
+							<td>{{i.orderTime}}</td>
+							<td>{{i.commentCount}}</td>
+							<td>
+								<a href="/admin/commentList/{{i._id}}">查看评论</a>
+								<a href="/admin/homeNewUpdate/{{i._id}}" uid-id={{i._id}}>更新</a>
+								<a href="javascript:;" uid-id={{i._id}}>删除</a>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</form>
+
+			<div class="page">
+			<a href="javascipt:;" class="prev">上一页</a>
+			<span>
+				<!-- <a href="javascipt:;" class="active">1</a>
+				<a href="javascipt:;">2</a> -->
+				<template v-for='i in pageCount'>
+					<a href="?page={{i+1}}">{{i+1}}</a>
+				</template>
+			</span>
+			<a href="javascipt:;" class="next">下一页</a>
+		</div>
+
+		</div>
+	</div>
+</div>
+
+<!--alertBox-->
+<div class="alertBox">
+	<div class="box">
+		<p>是否要删除这条新闻？</p>
+		<span>
+			<a href="javascript:;" class="left">取消</a>
+			<a href="javascript:;" class="right">确定</a>
+		</span>
+	</div>
+</div>
+<!--alertBox-->
+
+
+<% include footer.html %>
+
+
+<script>
+
+var pageSize = 5;
+var skip = getUrlParam("page")?(getUrlParam("page")-1)*pageSize:0;
+var count;
+
+var vm = new Vue({
+	el:'#newList',
+	data:{
+		newList:[],
+		pageCount:0
+	},
+	ready:function(){
+		$.ajax({
+			url: '/api/news/newsList',
+			type: 'post',
+			dataType: 'json',
+			data:{
+				'pageSize':pageSize,
+				'skip':skip
+			}
+		})
+		.done(function(data) {
+			if(data.json=='0000'){
+				vm.newList = data.data.newList;
+				count = data.data.count;
+
+				if(count>pageSize){
+					$(".page").show();
+					vm.pageCount = Math.ceil(count/pageSize);
+				}
+				else{
+					$(".page").hide();
+				}
+
+				vm.page();
+			}
+			vm.alertBox();
+		})
+	},
+	methods:{
+		alertBox:function(){
+			this.$nextTick(function(){
+				$(".homeNewList").delegate('a', 'click', function(event) {
+
+					var _this = $(this);
+
+					if($(this).html()=='删除'){
+
+						$(".alertBox").fadeIn(200);
+
+						$(".box span a").eq(1).unbind('click').bind('click',function(){
+							$.ajax({
+								url: '/api/admin/deleteNew',
+								type: 'post',
+								dataType: 'json',
+								data: {
+									'objectId': _this.attr('uid-id')
+								}
+							})
+							.done(function(data) {
+								if(data.json=='0000'){
+									$(".alertBox").fadeOut(200);
+									window.location.reload(true)
+								}
+							})
+						})
+
+					}
+				});
+			})
+		},
+
+		page:function(){
+			this.$nextTick(function(){
+
+				var curIndex = getUrlParam('page')||1;
+
+				$(".page span a").eq(curIndex-1).addClass('active');
+
+				if(curIndex==1){
+					$(".page .prev").attr('href','?page=1')
+				}
+				else{
+					$(".page .prev").attr('href','?page='+(curIndex-1))
+				};
+
+				if(curIndex==Math.ceil(count/pageSize)){
+					$(".page .next").attr('href','?page='+Math.ceil(count/pageSize))
+				}
+				else{
+					$(".page .next").attr('href','?page='+(curIndex*1+1))
+				}
+				
+			})
+		}
+
+	}
+});
+
+function getUrlParam(name){
+    var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+    var r = window.location.search.substring(1).match(reg); //匹配目标参数
+    if (r != null) return unescape(r[2]);
+    return ''; //返回参数值
+}
+
+</script>

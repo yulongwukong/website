@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title><%=title %></title>
+	<% include meta.html %>
+</head>
+<body>
+	<div class="header">
+		<div class="nav">
+			<div class="logo">
+				<a href="/">keep</a>
+			</div>
+			<ul>
+				<li>
+					<a href="/">首页</a>
+				</li>
+				<li>
+					<a href="/feature">特色功能</a>
+				</li>
+				<li>
+					<a href="/about">我们团队</a>
+				</li>
+				<li>
+					<a href="/news">新闻列表</a>
+				</li>
+				<li>
+					<a href="/contact">联系我们</a>
+				</li>
+			</ul>
+			<%if(!userName){%>
+				<div class="login">
+					<a href="/login">登录</a>
+					<a href="/register">注册</a>	
+				</div>
+			<%}else{%>
+				<div class="showLogin">
+					<span>欢迎：<em id="userName"><a href="/center"><%=userName%></a></em></span>
+					<a href="/loginout">退出</a>	
+				</div>
+			<%}%>
+		</div>
+	</div>
+
+<script>
+	$(function(){
+
+		var la = window.location.href;
+		var last = 0;
+
+		$(".nav ul li a").each(function(index, el) {
+
+			if( la.indexOf( $(this).attr('href') ) !=-1 ){
+				last = index;
+				return;
+			}
+			
+		});
+
+		$(".nav ul li a").eq(last).addClass('active');
+
+	})	
+</script>

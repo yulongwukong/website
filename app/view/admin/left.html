@@ -1,0 +1,47 @@
+<div class="adminLeft">
+	<div class="adminNav">
+		<ul>
+			<li>
+				<p>首页banner</p>
+				<div>
+					<a href="/admin/homeBannerList">首页banner图管理</a>
+					<a href="/admin/homeBannerNew">增加首页banner图</a>
+				</div>
+			</li>
+
+			<li>
+				<p>新闻列表</p>
+				<div>
+					<a href="/admin/homeNewList">新闻列表</a>
+					<a href="/admin/newHomeNew">增加新闻</a>
+				</div>
+			</li>
+
+			<li>
+				<p>网站用户</p>
+				<div>
+					<a href="/admin/userList">用户列表</a>
+				</div>
+			</li>
+			
+		</ul>
+	</div>
+</div>
+<script>
+	$(function(){
+		var url = window.location.href;
+		var last = 0;
+
+		$('.adminNav a').each(function(index,el){
+			if( url.indexOf($(this).attr('href'))!= -1){
+				last = index;
+				return;
+			}
+		})
+
+		$('.adminNav a').eq(last).addClass('current')
+
+
+		
+	})
+</script>

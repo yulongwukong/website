@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title><%=title%></title>
+	<% include meta.html %>
+</head>
+<body>
+
+<div class="login">
+	<div class="loginContent">
+		<h3>后台管理系统</h3>
+		<div class="form">
+			<form id='adminForm' method='post'>
+				<p>
+					<span>用户名：</span>
+					<input type="text" id='userName' name='userName' placeholder='请输入账号'>
+					<em></em>
+				</p>
+				<p>
+					<span>密码：</span>
+					<input id='passWord' name='passWord' type="password">
+					<em></em>
+				</p>
+				<p>
+					<a href="javascript:;">登录</a>
+				</p>
+			</form>
+		</div>
+	</div>
+</div>
+
+	
+</body>
+</html>
+<script src='../js/libs/validate.min.js'></script>
+<script src='../js/libs/message.js'></script>
+<script src='../js/libs/metadata.js'></script>
+<script src='../js/admin.js'></script>

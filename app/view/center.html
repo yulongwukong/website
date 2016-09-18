@@ -1,0 +1,72 @@
+<% include header.html %>
+<div class="main">
+	<h3>我的个人中心</h3>
+	<div class="center">
+		<div class="content_left">
+		<form id="upload_form" enctype="multipart/form-data" method="post" onsubmit="return checkForm()" action="/api/uploadPic">
+			<!-- hidden crop params -->
+            <input type="hidden" id="x1" name="x1" />
+            <input type="hidden" id="y1" name="y1" />
+            <input type="hidden" id="filesize" name="filesize" />
+			<input type="hidden" id="filetype" name="filetype" />
+			<input type="hidden" id="fileWidth" name="fileWidth" />
+			<input type="hidden" id="fileHeight" name="fileHeight" />
+			<input type="hidden" id="w" name="w" />
+			<input type="hidden" id="h" name="h" />
+
+			<div class="photo">
+				<table>
+					<tr>
+						<td width="120">
+							<img src="<%=user.pic%>" alt="">
+							<input type="hidden" name="userId" value="<%=user._id%>">
+							<a href="javascript:;" class="tu">
+								更换头像
+								<input type="file" name="image_file" id="image_file" onChange='fileSelectHandler()'>
+							</a>
+						</td>
+						<td>
+							<p><%=userName%><a class="deleteUser" href="javascript:;">注销</a></p>
+						</td>
+					</tr>
+				</table>
+				<div class="fileImage">
+						<div class="preview">
+							<img id="preview" />
+						</div>
+						<div class="imageInfo">
+							<div id="preview_box" class="crop_preview">
+								<img id="crop_preview" src="" alt="">
+							</div>
+						</div>
+		
+						<div class="submit">
+							<input type="submit" value="确定上传" />
+						</div>
+				</div>
+			</div>
+		</form>	
+		</div>
+	</div>
+</div>
+<% include footer.html %>
+<script src='js/script.js'></script>
+<script>
+	$(function(){
+
+		$('.photo .deleteUser').click(function(){
+			$.ajax({
+				url: '/api/deleteUser',
+				type: 'get',
+				dataType: 'json',
+			})
+			.done(function(data) {
+				if(data.json=='0000'){
+					window.location.href='/'
+				}
+			})
+		});
+	});
+
+
+</script>

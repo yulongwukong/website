@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title><%=title%></title>
+	<% include meta.html %>
+	<script type="text/javascript" charset="utf-8" src="/ueditor/ueditor.config.js"></script>
+    <script type="text/javascript" charset="utf-8" src="/ueditor/ueditor.all.min.js"> </script>
+    <script type="text/javascript" charset="utf-8" src="/ueditor/lang/zh-cn/zh-cn.js"></script>
+</head>
+<body>
+<div class="admin">
+	<% include head.html %>
+	<div class="adminMian">
+		<% include left.html %>
+		<div class="adminRight">
+			<h1><%=sideTitle%></h1>
+			<form action="/admin/home/newHomeNew" method="post" autocomplete="on" enctype="multipart/form-data">
+				<input name='id' type="hidden" value="<%=news._id%>">
+				<table>
+					<tr>
+						<td>标题：</td>
+						<td><input name='title' type="text" placeholder='请输入标题' required="required" value="<%=news.title%>"></td>
+					</tr>
+					
+					<tr>
+						<td>上传缩略图：</td>
+						<td><input name='uploadImg' type="file" multiple="multiple"></td>
+					</tr>
+					<tr>
+						<td>描述：</td>
+						<td>
+							<textarea name='desc' type="text" placeholder='请输入文字描述' required="required" maxlength='100'><%=news.desc%></textarea>
+						</td>
+					</tr>
+					<tr>
+						<td>文章内容：</td>
+						<td>
+							<script id="editor" type="text/plain" style="width:900px;height:500px;"></script>
+							<input type="hidden" value="<%=news.content%>" id='content'>
+						</td>
+					</tr>
+					<tr>
+						<td></td>
+						<td>
+							<input class="reset" type="reset" value="重置">
+							<input class="submit" type="submit" value="提交">
+						</td>
+					</tr>
+				</table>
+			</form>
+		</div>
+	</div>
+</div>
+</body>
+
+<script>
+	var content = $("#content").val();
+	var ue = UE.getEditor('editor',{
+		initialContent:content
+	});
+</script>

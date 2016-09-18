@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title><%=title%></title>
+	<% include meta.html %>
+</head>
+<body>
+<div class="admin">
+	<% include head.html %>
+	<div class="adminMian">
+		<% include left.html %>
+		<div class="adminRight">
+			<h1><%=sideTitle%></h1>
+			<form action="/admin/home/banner" method="post" autocomplete="on" enctype="multipart/form-data">
+				<input name='id' type="hidden" value="<%=banner._id%>">
+				<table>
+					<tr>
+						<td>图片链接：</td>
+						<td><input name='link' type="text" placeholder='请输入新闻链接' required="required" value="<%=banner.link%>"></td>
+					</tr>
+					<%if(banner._id){%>
+						<tr>
+							<td>缩略图地址：</td>
+							<td><input name='poster' type="text" required="required" value="<%=banner.uploadImg%>"></td>
+						</tr>
+					<%}%>
+					<tr>
+						<td>上传缩略图：</td>
+						<td><input name='uploadImg' type="file" multiple="multiple"></td>
+					</tr>
+					<tr>
+						<td>图片排序：</td>
+						<td><input name='sortIndex' required="required" type="text" value="<%=banner.sortIndex%>"></td>
+					</tr>
+					<tr>
+						<td></td>
+						<td>
+							<input class="reset" type="reset" value="重置">
+							<input class="submit" type="submit" value="提交">
+						</td>
+					</tr>
+				</table>
+			</form>
+		</div>
+	</div>
+</div>
+</body>
